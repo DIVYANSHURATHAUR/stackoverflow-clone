@@ -2,6 +2,7 @@ import React ,{useState}from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {useNavigate} from 'react-router-dom'
 import './AskQuestion.css'
+
 import {askQuestion} from '../../actions/question'
 const AskQuestion = () => {
   const [questionTitle,setQuestionTitle]=useState('')
@@ -15,7 +16,7 @@ const AskQuestion = () => {
   const handleSubmit=(e)=>{
     e.preventDefault()
     // console.log({questionTitle,questionBody,questionTags})
-    dispatch(askQuestion({questionTitle,questionBody,questionTags,userPosted:User.result.name},navigate))
+    dispatch(askQuestion({questionTitle,questionBody,questionTags,userPosted:User.result.name,userId:User?.result?._id},navigate))
   }
   const handleEnter=(e)=>{
     if(e.key==='Enter'){

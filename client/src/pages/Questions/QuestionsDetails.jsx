@@ -1,75 +1,111 @@
-import React from 'react'
-import {Link, useParams} from 'react-router-dom'
+import React,{useState} from 'react'
+import {Link, useParams,useNavigate,useLocation} from 'react-router-dom'
 import upvote from '../../images/sort-up-solid.svg'
 import downvote from '../../images/sort-down-solid.svg'
 import './Questions.css'
+import {useSelector, useDispatch} from 'react-redux'
 import Avatar from '../../components/Avatar/Avatar'
 import DisplayAnswer from './DisplayAnswer'
+import { postAnswer,deleteQuestion } from '../../actions/question'
+import moment from 'moment'
+import copy from 'copy-to-clipboard'
 const QuestionsDetails = () => {
 
     const {id}= useParams()
- console.log(id)
-    var questionsList =[{
-        _id:'1',
-        upVotes: 3,
-        downVotes: 2,
-        noOfAnswers: 2,
-        questionTitle:"What is a function",
-        questionBody:"it is meant to be",
-        questionTags: ["java","node js","react js","mongo db"],
-        userPosted:"mano",
-        userId:1,
-        askedOn:"jan 1",
-        answer:[{
-          answerBody:"Answer",
-          userAnswered:'kumar',
-          answeredOn:"jan 2",
-          userId:2,
-        }]
-       },{
-        _id:'2',
-        upVotes: 3,
-        downVotes:2,
-        noOfAnswers: 0,
-        questionTitle:"What is a function",
-        questionBody:"it is meant to be",
-        questionTags: ["javascript","R","python"],
-        userPosted:"mano",
-        askedOn:"jan 1",
-        userId:1,
-        answer:[{
-          answerBody:"Answer",
-          userAnswered:'kumar',
-          answeredOn:"jan 2",
-          userId:2,
-        }]
-       },{
-        _id:'3',
-        upVotes: 3,
-        downVotes:2,
-        noOfAnswers: 0,
-        questionTitle:"What is a function",
-        questionBody:"it is meant to be",
-        questionTags: ["javascript","R","python"],
-        userPosted:"mano",
-        askedOn:"jan 1",
-        userId:1,
-        answer:[{
-          answerBody:"Answer",
-          userAnswered:'kumar',
-          answeredOn:"jan 2",
-          userId:2,
-        }]
-       }]
+    const questionsList = useSelector(state=>state.questionsReducer)
+
+
+//     var questionsList =[{
+//         _id:'1',
+//         upVotes: 3,
+//         downVotes: 2,
+//         noOfAnswers: 2,
+//         questionTitle:"What is a function",
+//         questionBody:"it is meant to be",
+//         questionTags: ["java","node js","react js","mongo db"],
+//         userPosted:"mano",
+//         userId:1,
+//         askedOn:"jan 1",
+//         answer:[{
+//           answerBody:"Answer",
+//           userAnswered:'kumar',
+//           answeredOn:"jan 2",
+//           userId:2,
+//         }]
+//        },{
+//         _id:'2',
+//         upVotes: 3,
+//         downVotes:2,
+//         noOfAnswers: 0,
+//         questionTitle:"What is a function",
+//         questionBody:"it is meant to be",
+//         questionTags: ["javascript","R","python"],
+//         userPosted:"mano",
+//         askedOn:"jan 1",
+//         userId:1,
+//         answer:[{
+//           answerBody:"Answer",
+//           userAnswered:'kumar',
+//           answeredOn:"jan 2",
+//           userId:2,
+//         }]
+//        },{
+//         _id:'3',
+//         upVotes: 3,
+//         downVotes:2,
+//         noOfAnswers: 0,
+//         questionTitle:"What is a function",
+//         questionBody:"it is meant to be",
+//         questionTags: ["javascript","R","python"],
+//         userPosted:"mano",
+//         askedOn:"jan 1",
+//         userId:1,
+//         answer:[{
+//           answerBody:"Answer",
+//           userAnswered:'kumar',
+//           answeredOn:"jan 2",
+//           userId:2,
+//         }]
+//        }]
+const [Answer,setAnswer]=useState('')
+const dispatch=useDispatch()
+const Navigate=useNavigate()
+const location=useLocation()
+const url='http://localhost:3000'
+const User=useSelector((state)=>(state.currentUserReducer))
+const handlePostAns=(e,answerLength)=>{
+    e.preventDefault()
+    if(User===null){
+alert('Login or Signup to answer a question')
+Navigate('/Auth')
+    }
+    else{
+        if(Answer ===''){
+            alert("Enter an answer before submitting")
+        }
+        else{
+            dispatch(postAnswer({id,noOfAnswers:answerLength+1,answerBody:Answer,userAnswered:User.result.name,userId:User.result._id}))
+        }
+    }
+
+}
+const handleShare=()=>{
+    copy(url+location.pathname)
+    alert('copyed url: '+url+location.pathname)
+}
+
+const handleDelete=()=>{
+    dispatch(deleteQuestion(id,Navigate))
+}
       
   return (
     <div className='question-details-page'>
     {
-        questionsList=== null?
+        questionsList.data=== null?
         <h1>Loading...</h1>:
         <>
             {
-                questionsList.filter(question=>question._id === id).map(question =>(
+                questionsList.data.filter(question=>question._id === id).map(question =>(
                     <div key={question._id}>
                     {console.log(question)}
 <section className='question-details-container'>
@@ -77,10 +113,10 @@ const QuestionsDetails = () => {
 <div className='question-details-container-2'>
 <div className='question-votes'>
 <img src={upvote}  alt="" width='18' className='votes-icon'/>
-<p>{question.upVotes - question.downVotes}</p>
+<p>{question.upVotes - question.downVotes ||0}</p>
 <img src={downvote}  alt="" width='18' className='votes-icon'/>
 </div>
-<div style={{width: "100%"}}>
+<div style={{width: "100%"}}> 
 <p className='question-body'>{question.questionBody}</p>
 <div className='question-details-tags'>
 {
@@ -91,12 +127,16 @@ const QuestionsDetails = () => {
 </div>
 <div className='question-actions-user'>
 <div>
-    <button type='button'>Share</button>
-    <button type='button'>Delete</button>
+    <button type='button' onClick={handleShare}>Share</button>
+    {
+        User?.result?._id===question?.userId &&(
+    <button type='button' onClick={handleDelete}>Delete</button>
+        )
+    }
 </div>
 </div>
 <div>
-    <p>asked {question.askedOn}</p>
+    <p>asked {moment(question.askedOn).fromNow()}</p>
     <Link to={`/User/${question.userId}`} className='user-link' style={{color:'#0086d8'}}>
         <Avatar backgroundColor="orange" px="8px" py="5px">{question.userPosted.charAt(0).toUpperCase()}</Avatar>
         <div>
@@ -110,16 +150,16 @@ const QuestionsDetails = () => {
 {
     question.noOfAnswers !== 0 &&(
         <section>
-            <h3>{question.noOfAnswers} answers</h3>
-            <DisplayAnswer key={question._id} question={question}/>
+            <h3>{question.noOfAnswers} Answers</h3>
+            <DisplayAnswer key={question._id} question={question} handleShare={handleShare}/>
         </section>
     )
 }
 <section className='post-ans-container'>
 <h3>Your Answer</h3>
-<form>
-    <textarea name="" id="" cols="30" rows="10"></textarea><br/>
-<input type="Submit" className='post-ans-btn' value='Post Your Answer' />
+<form onSubmit={ (e)=>{handlePostAns(e,question.answer.length)}}>
+    <textarea name="" id="" cols="30" rows="10" onChange={(e)=>setAnswer(e.target.value)}></textarea><br/>
+<input type="Submit" className='post-ans-btn' onChange={()=>{}} value='Post Your Answer' />
 </form>
 <p>
     Browse other Question tagged
