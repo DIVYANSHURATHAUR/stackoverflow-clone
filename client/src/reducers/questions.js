@@ -1,6 +1,9 @@
+import { askQuestion } from "../actions/question"
+
 const questionsReducer=(state={data:null},action)=>{
     switch(action.type){
         case "POST_QUESTION":
+            console.log(askQuestion)
             return { ...state}
             case "POST_ANSWER":
             return { ...state}

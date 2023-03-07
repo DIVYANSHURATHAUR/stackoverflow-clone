@@ -2,7 +2,9 @@ import * as api from "../api/index";
 
 export const askQuestion = (questionData, navigate) => async (dispatch) => {
   try {
+    console.log(questionData)
     const { data } = await api.postQuestion(questionData);
+    console.log(data)
     dispatch({ type: "POST_QUESTION", payload: data });
     dispatch(fetchAllQuestions());
     navigate("/");
@@ -29,6 +31,14 @@ export const deleteQuestion = (id, navigate) => async (dispatch) => {
     console.log(error);
   }
 };
+export const voteQuestion=(id,value, userId)=>async(dispatch)=>{
+  try{
+const {data}=await api.voteQuestion(id,value, userId)
+dispatch(fetchAllQuestions());
+  }catch(error){
+console.log(error)
+  }
+}
 
 export const postAnswer = (answerData) => async (dispatch) => {
   try {
