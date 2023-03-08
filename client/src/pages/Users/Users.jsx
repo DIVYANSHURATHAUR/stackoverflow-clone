@@ -1,25 +1,19 @@
-import React from 'react'
-import './Users.css'
-import { useLocation } from 'react-router-dom'
-import LeftSlidebar from '../../components/LeftSlidebar/LeftSlidebar'
-import UsersList from './UsersList'
-const Users = () => {
-    const location=useLocation()
+import React from "react";
+
+import "./Users.css";
+import LeftSlidebar from "../../components/LeftSlidebar/LeftSlidebar";
+import UsersList from "./UsersList";
+
+const Users = ({ slideIn, handleSlideIn }) => {
   return (
-    <div className='home-contaner-1'>
-    <LeftSlidebar/>
-    <div className='home-container-2'>
-        {
-            location.pathname==='/Users'?
-            <UsersList/>:
-            <>
-
-            </>
-        }
+    <div className="home-container-1">
+      <LeftSlidebar slideIn={slideIn} handleSlideIn={handleSlideIn} />
+      <div className="home-container-2" style={{ marginTop: "30px" }}>
+        <h1 style={{ fontWeight: "400" }}>Users</h1>
+        <UsersList />
+      </div>
     </div>
-     
-    </div>
-  )
-}
+  );
+};
 
-export default Users
+export default Users;
