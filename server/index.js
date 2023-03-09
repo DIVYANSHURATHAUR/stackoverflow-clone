@@ -6,9 +6,11 @@ import userRoutes from "./routes/users.js";
 import questionRoutes from "./routes/Questions.js";
 import answerRoutes from "./routes/Answers.js";
 
-dotenv.config();
+
 
 const app = express();
+
+dotenv.config();
 
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
@@ -24,12 +26,11 @@ app.use("/questions", questionRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-const CONNECTION_URL =
-  "mongodb+srv://admin:admin@stack-overflow-clone.h1altgh.mongodb.net/?retryWrites=true&w=majority";
+const DATABASE_URL= process.env.CONNECTION_URL
 
 mongoose.set("strictQuery", true);
 mongoose
-  .connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() =>
     app.listen(PORT, () => {
       console.log(`server running in port ${PORT}`);
